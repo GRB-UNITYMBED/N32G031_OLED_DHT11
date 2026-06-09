@@ -1,0 +1,11 @@
+{
+  "name": "oled_dht11",
+  "mcu": "n32g031",
+  "version": "0.1.0",
+  "sdk": "nations-v1.2.0",
+  "dependencies": {},
+  "build": {
+    "optimization": "-Os",
+    "defines": []
+  }
+}

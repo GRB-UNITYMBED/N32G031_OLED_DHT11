@@ -1,0 +1,13 @@
+# Build output
+build/
+
+# Local IDE / tooling state
+.unitymbed/
+.attic/
+
+# macOS
+.DS_Store
+
+# Object / map artifacts (if any escape build/)
+*.o
+*.map
