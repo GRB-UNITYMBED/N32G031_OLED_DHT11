@@ -33,7 +33,7 @@ Whether you are using **Windows** or **macOS**, our integrated IDE environment h
 
 ---
 
-## 🤖 AI Prompting Guide in our IDE
+## AI Prompting Guide in our IDE
 
 Students can use the built-in AI Assistant in the IDE to explore, debug, and modify this project. Try pasting these example prompts into the AI Chat window:
 
