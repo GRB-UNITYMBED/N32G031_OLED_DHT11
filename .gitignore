@@ -1,0 +1,19 @@
+# Build output
+build/
+
+# Local IDE / tooling state
+.unitymbed/
+.attic/
+.vscode/
+
+# macOS
+.DS_Store
+
+# Object / map artifacts
+*.o
+*.map
+
+# Embedded Binary Artifacts
+*.elf
+*.bin
+*.hex
