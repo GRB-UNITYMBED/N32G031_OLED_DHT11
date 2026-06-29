@@ -31,4 +31,7 @@ A real-time temperature and humidity monitoring system displaying data on an OLE
 
 ## Troubleshooting
 * **Screen constantly shows "Sensor Error! Check Wiring.":** Ensure the PA5 wire is not loose and verify the DHT11 VCC/GND connections are correct.
-* **OLED screen is completely dark:** Check if the PB6 (SCL) and PB7 (SDA) wires are swapped, and verify the 3.3V power supply.
+* **OLED screen is completely dark:** Check if the PB6 (SCL) and PB7 (SDA) wires are swapped, and verify the 3.3V power supply.|
+
+---
+Part of the [UnityMbed](https://github.com/GRB-UNITYMBED) N32G031 example set.
