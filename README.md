@@ -6,7 +6,7 @@ A real-time temperature and humidity monitoring system displaying data on an OLE
 
 ---
 
-## 🔌 Wiring
+## Wiring
 
 | Device | Pin | N32G031 | Notes |
 | :--- | :--- | :--- | :--- |
@@ -20,7 +20,7 @@ A real-time temperature and humidity monitoring system displaying data on an OLE
 
 ---
 
-## 🚀 Behaviour & Execution
+## Behaviour & Execution
 
 **Screen Prompts & Output**
 | 1. Boot Screen | 2. Normal Operation | 3. Error State |
@@ -30,14 +30,14 @@ A real-time temperature and humidity monitoring system displaying data on an OLE
 
 ---
 
-## 🛠️ Hardware Setup & Troubleshooting
+## Hardware Setup & Troubleshooting
 
 * **Screen constantly shows "Sensor Error! Check Wiring.":** Ensure the PA5 wire is not loose and verify the DHT11 VCC/GND connections are correct.
 * **OLED screen is completely dark:** Check if the PB6 (SCL) and PB7 (SDA) wires are swapped, and verify the 3.3V power supply.
 
 ---
 
-## ⚡ Build and Flash (Universal Cross-Platform)
+## Build and Flash (Universal Cross-Platform)
 1. **Open Project:** Open this project folder directly in the IDE.
 2. **Build & Flash:** Simply click the **Build** and **Flash** buttons on the interface.
 
