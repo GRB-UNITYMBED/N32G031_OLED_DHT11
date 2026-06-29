@@ -9,7 +9,7 @@ A real-time temperature and humidity monitoring system displaying data on an OLE
 * Temperature & Humidity Sensor: **DHT11**
 * Display: **OLED Display (I2C)** (0.96-inch or any standard display driver)
 
-## Wiring Diagram
+## Wiring
 
 | Device | Pin | Connect to N32G031 (Pin) | Notes |
 | :--- | :--- | :--- | :--- |
