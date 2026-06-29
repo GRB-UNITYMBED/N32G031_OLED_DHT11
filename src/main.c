@@ -1,77 +1,84 @@
 #include "n32g031.h"
 #include "n32g031_gpio.h"
 #include "n32g031_rcc.h"
+#include "core_cm0.h"
+#include "dht11.h"
+#include "oled.h"
+#include "utils.h"
+#include <stdio.h> 
 
-/* ====================================================================
- * ⚙️ [โซนจูนฮาร์ดแวร์] 
- * ค่าจุดองศาต่างๆ ที่เราหามาอย่างยากลำบาก!
- * ==================================================================== */
-#define PULSE_0_DEG     2250   // 0 องศา (หันซ้ายสุด)
-#define PULSE_90_DEG    4400   // 90 องศา (ชี้ขึ้นฟ้าตั้งฉาก)
-#define PULSE_180_DEG   5500   // 180 องศา (หันขวาสุด)
+int main(void)
+{
+    uint8_t current_temp = 0;
+    uint8_t current_humi = 0;
+    
+    // ตัวแปรเก็บค่าเดิม เพื่อใช้อัปเดตจอเฉพาะตอนที่ค่าเปลี่ยน (กันจอกะพริบ)
+    uint8_t last_temp = 255;
+    uint8_t last_humi = 255;
+    uint8_t was_error = 1; // ตัวเช็กสถานะ Error
 
-/* ฟังก์ชันหน่วงเวลา */
-void Delay_Loop(volatile uint32_t count) {
-    while(count--) { __NOP(); }
-}
+    char buffer[20];
 
-/* ====================================================================
- * 🧩 ฟังก์ชันย่อย: "ขยับทีละก้าว" (ส่งสัญญาณแค่ 1 รอบคลื่น)
- * ==================================================================== */
-void Servo_Step(uint32_t pulse_width) {
-    GPIO_SetBits(GPIOA, GPIO_PIN_1);     
-    Delay_Loop(pulse_width);             
-    GPIO_ResetBits(GPIOA, GPIO_PIN_1);   
-    Delay_Loop(100000);                  
-}
+    SystemInit();
+    SystemCoreClockUpdate();
+    
+    delay_ms(500); 
+    OLED_Init();
+    OLED_Clear();
+    DHT11_Init(); 
+    
+    // หน้าจอต้อนรับ
+    OLED_ShowString(10, 24, "System Ready", 16);
+    delay_ms(1500); 
+    
+    OLED_Clear();
 
-/* ====================================================================
- * 🪄 ฟังก์ชันเวทมนตร์: "ขยับแบบสมูทจากมุมหนึ่งไปอีกมุมหนึ่ง"
- * ==================================================================== */
-void Smooth_Move(uint32_t start_pulse, uint32_t end_pulse) {
-    // ถ้าจุดหมายอยู่ไกลกว่า (ต้องหมุนไปทางขวา) ให้ค่อยๆ บวกเลขขึ้น
-    if (start_pulse < end_pulse) {
-        for (uint32_t p = start_pulse; p <= end_pulse; p += 20) {
-            Servo_Step(p);
+    while (1)
+    {
+        if (DHT11_Read_Data(&current_temp, &current_humi) == 1)
+        {
+            // ถ้ารอบที่แล้วเป็น Error ให้ล้างหน้าจอแล้วพิมพ์หัวข้อใหม่
+            if (was_error) {
+                OLED_Clear();
+                OLED_ShowString(0, 0, "Temp:      ", 8);
+                OLED_ShowString(0, 32, "Humidity:         ", 8);
+                was_error = 0;
+                last_temp = 255; // บังคับให้วาดเลขใหม่
+                last_humi = 255;
+            }
+
+            // 1. อัปเดตอุณหภูมิ (เฉพาะตอนค่าเปลี่ยนเท่านั้น จอจะได้ไม่กะพริบ)
+            if (current_temp != last_temp) {
+                // ใช้ %02d เผื่อเลขหลักเดียว ให้มี 2 หลักเสมอ (เช่น 08, 25)
+                // เว้นวรรคหน้า C ไว้ 2 ช่อง เพื่อเอาตัว o ไปแทรก
+                sprintf(buffer, "%02d  C        ", current_temp);
+                OLED_ShowString(0, 12, buffer, 16); 
+                
+                // พิมพ์ตัว o ที่พิกัด x=24 (หน้าตัว C พอดี)
+                OLED_ShowString(24, 12, "o", 8); 
+                
+                last_temp = current_temp; // จำค่าล่าสุดไว้
+            }
+
+            // 2. อัปเดตความชื้น (เฉพาะตอนค่าเปลี่ยนเท่านั้น)
+            if (current_humi != last_humi) {
+                sprintf(buffer, "%02d %%        ", current_humi);
+                OLED_ShowString(0, 44, buffer, 16); 
+                
+                last_humi = current_humi; // จำค่าล่าสุดไว้
+            }
         }
-    } 
-    // ถ้าจุดหมายอยู่น้อยกว่า (ต้องหมุนไปทางซ้าย) ให้ค่อยๆ ลบเล็กลง
-    else {
-        for (uint32_t p = start_pulse; p >= end_pulse; p -= 20) {
-            Servo_Step(p);
+        else
+        {
+            // ถ้าหลุด ให้ล้างจอพิมพ์ Error ครั้งเดียว (ไม่ให้กะพริบ)
+            if (!was_error) {
+                OLED_Clear();
+                was_error = 1;
+            }
+            OLED_ShowString(0, 0,  "Sensor Error!     ", 16);
+            OLED_ShowString(0, 24, "Check Wiring.     ", 16);
         }
-    }
-}
 
-/* ====================================================================
- * 🚀 [โซนฝึกเขียนโค้ด] ภารกิจ: "หันกวาด ซ้าย-กลาง-ขวา แบบนุ่มนวล"
- * ==================================================================== */
-int main(void) {
-    /* เตรียมความพร้อมฮาร์ดแวร์ */
-    RCC_EnableAPB2PeriphClk(RCC_APB2_PERIPH_GPIOA, ENABLE);
-    GPIO_InitType GPIO_InitStructure;
-    GPIO_InitStruct(&GPIO_InitStructure);
-    GPIO_InitStructure.Pin = GPIO_PIN_1;
-    GPIO_InitStructure.GPIO_Mode = GPIO_MODE_OUTPUT_PP; 
-    GPIO_InitPeripheral(GPIOA, &GPIO_InitStructure);
-
-    while(1) {
-        
-        /* 1. ค่อย ๆ กวาดแขนจาก 0 ไป 90 องศา */
-        Smooth_Move(PULSE_0_DEG, PULSE_90_DEG);
-        Delay_Loop(8000000); // พักโชว์ท่า 2 วินาที
-        
-        /* 2. ค่อย ๆ กวาดแขนจาก 90 ไป 180 องศา */
-        Smooth_Move(PULSE_90_DEG, PULSE_180_DEG);
-        Delay_Loop(8000000); // พักโชว์ท่า 2 วินาที
-
-        /* 3. ค่อย ๆ กวาดแขนกลับจาก 180 มาที่ 90 องศา */
-        Smooth_Move(PULSE_180_DEG, PULSE_90_DEG);
-        Delay_Loop(8000000); // พักโชว์ท่า 2 วินาที
-
-        /* 4. ค่อย ๆ กวาดแขนกลับจาก 90 มาที่ 0 องศา เพื่อเตรียมเริ่มรอบใหม่ */
-        Smooth_Move(PULSE_90_DEG, PULSE_0_DEG);
-        Delay_Loop(8000000); // พักโชว์ท่า 2 วินาที
-
+        delay_ms(10); 
     }
 }
