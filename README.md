@@ -4,7 +4,7 @@ An interactive automation project designed to teach analog signal reading and ha
 
 This project is fully optimized for cross-platform workflows. No complex vendor IDEs or OS-specific setups are required. Open it directly in our IDE, plug in your board, and flash instantly.
 
-![servo](doc/images/Servo.png)
+![servo](doc/images/Servo_Potentiometer_100k.png)
 
 ---
 
@@ -33,7 +33,7 @@ Whether you are using **Windows** or **macOS**, our integrated IDE environment h
 
 ---
 
-## 🤖 AI Prompting Guide in our IDE
+## AI Prompting Guide in our IDE
 
 Students can use the built-in AI Assistant in the IDE to explore, debug, and modify this project. Try pasting these example prompts into the AI Chat window:
 
