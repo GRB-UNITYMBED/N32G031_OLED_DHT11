@@ -1,6 +1,6 @@
 # Smart Temperature and Humidity Monitor
 
-![Normal Operation](images/normal.png)
+![Normal Operation](doc/images/boot.png)
 
 A real-time temperature and humidity monitoring system displaying data on an OLED screen, using the N32G031 microcontroller and a DHT11 sensor.
 
@@ -26,19 +26,19 @@ A real-time temperature and humidity monitoring system displaying data on an OLE
 1. **Boot Screen:**
    Upon startup, the screen displays a welcome message for 1.5 seconds.
    > `System Ready`
-![Boot Screen](images/boot.png)
+![Boot Screen](doc/images/boot.png)
 
 2. **Normal Operation:**
    The system updates the numbers only when the values change to prevent screen flickering.
    > `Temp:      XX °C`
    > `Humidity:  XX %`
-![Normal Operation](images/normal.png)
+![Normal Operation](doc/images/normal.png)
 k
 3. **Error State:**
    If the DHT11 is disconnected or damaged, the system clears the screen and immediately displays a warning message.
    > `Sensor Error!`
    > `Check Wiring.`
-![Error State](images/error.png)
+![Error State](doc/images/error.png)
 
 ## Troubleshooting
 * **Screen constantly shows "Sensor Error! Check Wiring.":** Ensure the PA5 wire is not loose and verify the DHT11 VCC/GND connections are correct.
