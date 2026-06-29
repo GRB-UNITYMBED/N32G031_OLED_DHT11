@@ -23,22 +23,12 @@ A real-time temperature and humidity monitoring system displaying data on an OLE
 
 ## Screen Prompts & Output
 
-1. **Boot Screen:**
-   Upon startup, the screen displays a welcome message for 1.5 seconds.
-   > `System Ready`
-![Boot Screen](doc/images/boot.png)
+## Screen Prompts & Output
 
-2. **Normal Operation:**
-   The system updates the numbers only when the values change to prevent screen flickering.
-   > `Temp:      XX °C`
-   > `Humidity:  XX %`
-![Normal Operation](doc/images/normal.png)
-k
-3. **Error State:**
-   If the DHT11 is disconnected or damaged, the system clears the screen and immediately displays a warning message.
-   > `Sensor Error!`
-   > `Check Wiring.`
-![Error State](doc/images/error.png)
+| 1. Boot Screen | 2. Normal Operation | 3. Error State |
+| :--- | :--- | :--- |
+| Upon startup, the screen displays a welcome message for 1.5 seconds.<br><br>**Display:**<br>`System Ready` | The system updates the numbers only when the values change to prevent screen flickering.<br><br>**Display:**<br>`Temp:     XX °C`<br>`Humidity: XX %` | If the DHT11 is disconnected or damaged, the system clears the screen and displays a warning.<br><br>**Display:**<br>`Sensor Error!`<br>`Check Wiring.` |
+| ![Boot Screen](doc/images/boot.png) | ![Normal Operation](doc/images/normal.png) | ![Error State](doc/images/error.png) |
 
 ## Troubleshooting
 * **Screen constantly shows "Sensor Error! Check Wiring.":** Ensure the PA5 wire is not loose and verify the DHT11 VCC/GND connections are correct.
