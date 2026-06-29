@@ -13,13 +13,13 @@ A real-time temperature and humidity monitoring system displaying data on an OLE
 
 | Device | Pin | Connect to N32G031 (Pin) | Notes |
 | :--- | :--- | :--- | :--- |
-| **DHT11** | DATA / OUT | **PA5** | Requires a pull-up resistor (if not built into the module) |
-| | VCC | 3.3V / 5V | Check sensor voltage rating |
-| | GND | GND | |
-| **OLED (I2C)**| SCL | **PB6** | I2C Clock |
-| | SDA | **PB7** | I2C Data |
-| | VCC | 3.3V | |
-| | GND | GND | |
+| **DHT11** | 💛 DATA / OUT | **PA5** | Requires a pull-up resistor (if not built into the module) |
+| | ❤️ VCC | 3.3V / 5V | Check sensor voltage rating |
+| | 🖤 GND | GND | |
+| **OLED (I2C)**| 💙 SCL | **PB6** | I2C Clock |
+| | 💚 SDA | **PB7** | I2C Data |
+| | ❤️ VCC | 3.3V | |
+| | 🖤 GND | GND | |
 
 ## Screen Prompts & Output
 
