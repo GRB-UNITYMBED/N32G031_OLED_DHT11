@@ -21,7 +21,6 @@ A real-time temperature and humidity monitoring system displaying data on an OLE
 | | ❤️ VCC | 3.3V | |
 | | 🖤 GND | GND | |
 
-## Screen Prompts & Output
 
 ## Screen Prompts & Output
 
