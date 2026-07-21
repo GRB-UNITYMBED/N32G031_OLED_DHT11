@@ -1,4 +1,6 @@
 #include "utils.h"
+#include "n32g031.h"
+#include "core_cm0.h"
 
 void delay_ms(uint32_t ms) {
     SysTick->LOAD = (SystemCoreClock / 1000) - 1;
