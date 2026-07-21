@@ -12,10 +12,12 @@ int main(void)
     uint8_t current_temp = 0;
     uint8_t current_humi = 0;
     
-    // ตัวแปรเก็บค่าเดิม เพื่อใช้อัปเดตจอเฉพาะตอนที่ค่าเปลี่ยน (กันจอกะพริบ)
     uint8_t last_temp = 255;
     uint8_t last_humi = 255;
-    uint8_t was_error = 1; // ตัวเช็กสถานะ Error
+    uint8_t was_error = 1; 
+    
+    // 1. เพิ่มตัวแปรนับจำนวนครั้งที่อ่านพลาด
+    uint8_t error_count = 0; 
 
     char buffer[20];
 
@@ -27,7 +29,6 @@ int main(void)
     OLED_Clear();
     DHT11_Init(); 
     
-    // หน้าจอต้อนรับ
     OLED_ShowString(10, 24, "System Ready", 16);
     delay_ms(1500); 
     
@@ -37,48 +38,47 @@ int main(void)
     {
         if (DHT11_Read_Data(&current_temp, &current_humi) == 1)
         {
-            // ถ้ารอบที่แล้วเป็น Error ให้ล้างหน้าจอแล้วพิมพ์หัวข้อใหม่
+            // 2. ถ้าอ่านสำเร็จ ให้รีเซ็ตตัวนับ Error กลับเป็น 0 ทันที
+            error_count = 0; 
+
             if (was_error) {
                 OLED_Clear();
                 OLED_ShowString(0, 0, "Temp:      ", 8);
                 OLED_ShowString(0, 32, "Humidity:         ", 8);
                 was_error = 0;
-                last_temp = 255; // บังคับให้วาดเลขใหม่
+                last_temp = 255; 
                 last_humi = 255;
             }
 
-            // 1. อัปเดตอุณหภูมิ (เฉพาะตอนค่าเปลี่ยนเท่านั้น จอจะได้ไม่กะพริบ)
             if (current_temp != last_temp) {
-                // ใช้ %02d เผื่อเลขหลักเดียว ให้มี 2 หลักเสมอ (เช่น 08, 25)
-                // เว้นวรรคหน้า C ไว้ 2 ช่อง เพื่อเอาตัว o ไปแทรก
                 sprintf(buffer, "%02d  C        ", current_temp);
                 OLED_ShowString(0, 12, buffer, 16); 
-                
-                // พิมพ์ตัว o ที่พิกัด x=24 (หน้าตัว C พอดี)
                 OLED_ShowString(24, 12, "o", 8); 
-                
-                last_temp = current_temp; // จำค่าล่าสุดไว้
+                last_temp = current_temp; 
             }
 
-            // 2. อัปเดตความชื้น (เฉพาะตอนค่าเปลี่ยนเท่านั้น)
             if (current_humi != last_humi) {
                 sprintf(buffer, "%02d %%        ", current_humi);
                 OLED_ShowString(0, 44, buffer, 16); 
-                
-                last_humi = current_humi; // จำค่าล่าสุดไว้
+                last_humi = current_humi; 
             }
         }
         else
         {
-            // ถ้าหลุด ให้ล้างจอพิมพ์ Error ครั้งเดียว (ไม่ให้กะพริบ)
-            if (!was_error) {
-                OLED_Clear();
-                was_error = 1;
+            // 3. ถ้าอ่านพลาด ให้นับสะสมไป 1
+            error_count++; 
+
+            // 4. ถ้าพลาดติดกัน 3 ครั้งขึ้นไป (สายหลุดจริงๆ) ค่อยเคลียร์จอโชว์ Error
+            if (error_count >= 3) {
+                if (!was_error) {
+                    OLED_Clear();
+                    was_error = 1;
+                }
+                OLED_ShowString(0, 0,  "Sensor Error!     ", 16);
+                OLED_ShowString(0, 24, "Check Wiring.     ", 16);
             }
-            OLED_ShowString(0, 0,  "Sensor Error!     ", 16);
-            OLED_ShowString(0, 24, "Check Wiring.     ", 16);
         }
 
-        delay_ms(10); 
+        delay_ms(2000); 
     }
 }
