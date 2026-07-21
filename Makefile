@@ -13,6 +13,9 @@ OUTDIR = build
 
 # Source Files
 SRCS = src/main.c \
+	   src/utils.c \
+	   src/oled.c \
+	   src/dht11.c \
        startup/startup_n32g031_gcc.s \
        src/system_n32g031.c \
        drivers/src/n32g031_rcc.c \
