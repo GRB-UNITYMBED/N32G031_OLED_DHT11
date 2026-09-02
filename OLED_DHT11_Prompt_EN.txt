@@ -1,0 +1,91 @@
+==================================================
+Prompt 1: Heat Index & Comfort Level
+==================================================
+Please write the C code in main.c for the Nations N32G031 microcontroller to read data from a DHT11 sensor and display it on a 128x32 OLED, strictly following these requirements:
+
+1. Hardware & Library Setup:
+- Use the N32G031 Standard Peripheral Library (SPL).
+- Include necessary files: n32g031.h, n32g031_rcc.h, n32g031_gpio.h, utils.h, oled.h, dht11.h, <stdio.h>.
+- Create a led_init() function to configure pin PB1 as an LED output using the N32-specific macro GPIO_MODE_OUTPUT_PP (do NOT use STM32 macros).
+
+2. Comfort Level Evaluation Logic:
+- Use if-else statements based on Temperature (T) and Humidity (H):
+  * Warning: T >= 35 OR (T >= 32 AND H >= 70)
+  * Hot: T >= 30
+  * Cool: T <= 22
+  * Comfort: H between 40 and 70
+  * Normal: Any other conditions not met above.
+
+3. OLED Display (Crucial: 128x32 Screen):
+- Do NOT print text below Y=16 to prevent the text from wrapping around and overlapping at the top.
+- First line (Y=0): Display Temp and Humi on the same line, format: "T:%02dC H:%02d%% "
+- Second line (Y=16): Display the evaluated status, format: "Stat: %s"
+
+4. Main Loop Execution:
+- Read the DHT11 every 2 seconds.
+- If successful: Update the OLED and blink the LED on PB1 using Direct Registers (GPIOB->PBSC = (1U << 1); ON for 100ms, and GPIOB->PBC = (1U << 1); OFF for 1900ms).
+- If failed: Clear the OLED, display "SENSOR ERROR" at Y=0, turn off the LED, and delay for 2000ms.
+
+==================================================
+Prompt 2: Min/Max Temperature Memory
+==================================================
+Please upgrade the main.c code by adding a feature to track the Maximum (Max) and Minimum (Min) temperatures since startup. Follow these requirements:
+
+1. Tracking Logic:
+- Create global variables for max_temp (initialize to 0) and min_temp (initialize to 100).
+- Upon a successful DHT11 reading, use 'if' conditions to check and update max_temp and min_temp with the current temperature.
+
+2. OLED Display (128x32 screen):
+- Remove the startup splash screen code containing text like "created by biw" and remove any initial startup delays.
+- First line (Y=0): Display current values, format: "T:%02dC H:%02d%% "
+- Second line (Y=16): Display statistics, format: "Min:%02d Max:%02d "
+- Do NOT print below Y=16. Include trailing spaces in the format string to overwrite any old characters.
+
+3. Strict Constraints:
+- Use only existing OLED functions (e.g., OLED_ShowString). Do not modify the OLED library.
+- Ensure the LED blinking and Error handling logic from the previous step remain fully functional.
+
+==================================================
+Prompt 3: Non-blocking LED Alert via Direct Registers
+==================================================
+Please write the main.c code for the Nations N32G031 microcontroller (Bare-metal C) featuring a DHT11 sensor reading system, OLED display, and an LED alert system on pin PB1. Strictly follow these requirements:
+
+1. OLED Display:
+- No splash screen (do not display creator names or initial delays).
+- Use short prefixes for Temp, Humi, Min, and Max to prevent text from overflowing the screen (e.g., "Temp:", "Humi:", "Min:", "Max:").
+- Be careful with trailing spacebars in sprintf; keep string lengths exact so they do not exceed the screen width.
+
+2. LED Alert (PB1) via Direct Registers:
+- Configure pin PB1 as Output Push-Pull using ONLY N32G031 Direct Registers.
+- Allowed Registers: RCC->APB2PCLKEN (no 'R' suffix), GPIOB->PMODE, GPIOB->POTYPE, GPIOB->PUPD, GPIOB->PBC, GPIOB->PBSC, GPIOB->POD.
+- Do NOT use the POSPEED register (N32G031 does not have this as a separate register).
+- Do NOT use HAL or Arduino functions under any circumstances.
+
+3. Non-blocking Logic (Crucial):
+- Do NOT use the get_systick_ms() function to avoid Implicit Declaration errors.
+- Use a "Loop Counter" technique instead. Inside the while(1) loop, use only a single delay_ms(100) as the time base (1 tick = 100ms).
+- DHT11 Reading: Read every 2 seconds (count 20 ticks) to prevent sensor errors from polling too frequently.
+- LED Blinking: Check conditions and toggle every 200ms (count 2 ticks).
+
+4. Alert Conditions:
+- If Temperature (last_temp) >= 25°C OR the sensor fails to read (Error) -> Toggle the LED on PB1.
+- If Temperature < 25°C AND the sensor is normal -> Keep the LED turned OFF.
+- If the sensor encounters an Error, display the word "Error" on the OLED for both the Temp and Humi lines.
+
+==================================================
+Prompt 4: Real-time Scrolling Dual Line Graph (Mini Oscilloscope)
+==================================================
+Please write the C code in main.c for the N32G031 to display temperature and humidity values from the DHT11 sensor on a 128x64 OLED as a real-time 'Scrolling Dual Line Graph' resembling a Mini Oscilloscope.
+
+Technical Requirements:
+- Create a 128x8 byte (1024 bytes) Framebuffer in main.c.
+- Use arrays to store the history of Temp and Humi (128 points each), utilizing left-shift logic when a new reading is acquired.
+- Draw the graph using Bresenham's Line Algorithm so both lines are solid and smoothly connected.
+- Create a background grid using 'Dotted Lines' both vertically (every 32 pixels) and horizontally (every 16 pixels), mapping the values to fit the 64-pixel screen height.
+- Display the current values as text overlaid on the graph (HUD Overlay) in the top-left corner.
+
+Strict Constraints & Error Prevention:
+- Do NOT include <string.h> and <stdlib.h> under any circumstances to prevent Toolchain Errors (strings.h: No such file or directory).
+- Implement a custom my_abs() function instead of using abs(), and use a for loop to clear the Framebuffer instead of memset().
+- Do NOT modify oled.c or oled.h. To send the Framebuffer to the screen, use only existing public functions (e.g., OLED_DrawBitmap, OLED_ShowString).
+- Modify the Makefile by adding --specs=nano.specs to the LDFLAGS to prevent Linker Errors caused by sprintf.
