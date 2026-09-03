@@ -16,7 +16,7 @@ int main(void)
     uint8_t last_humi = 255;
     uint8_t was_error = 1; 
     
-    // 1. เพิ่มตัวแปรนับจำนวนครั้งที่อ่านพลาด
+    // 1. Add variable to track consecutive read error counts
     uint8_t error_count = 0; 
 
     char buffer[20];
@@ -38,7 +38,7 @@ int main(void)
     {
         if (DHT11_Read_Data(&current_temp, &current_humi) == 1)
         {
-            // 2. ถ้าอ่านสำเร็จ ให้รีเซ็ตตัวนับ Error กลับเป็น 0 ทันที
+            // 2. If read succeeds, reset the error counter to 0 immediately
             error_count = 0; 
 
             if (was_error) {
@@ -65,10 +65,10 @@ int main(void)
         }
         else
         {
-            // 3. ถ้าอ่านพลาด ให้นับสะสมไป 1
+            // 3. If read fails, increment error counter by 1
             error_count++; 
 
-            // 4. ถ้าพลาดติดกัน 3 ครั้งขึ้นไป (สายหลุดจริงๆ) ค่อยเคลียร์จอโชว์ Error
+            // 4. If failed 3 times consecutively (actual wiring disconnect), clear screen and display error
             if (error_count >= 3) {
                 if (!was_error) {
                     OLED_Clear();
