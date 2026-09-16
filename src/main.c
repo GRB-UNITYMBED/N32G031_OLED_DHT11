@@ -5,6 +5,7 @@
 #include "dht11.h"
 #include "oled.h"
 #include "utils.h"
+#include "debug_uart.h"
 #include <stdio.h> 
 
 int main(void)
@@ -23,6 +24,7 @@ int main(void)
 
     SystemInit();
     SystemCoreClockUpdate();
+    Debug_UART_Init();
     
     delay_ms(500); 
     OLED_Init();
@@ -30,6 +32,7 @@ int main(void)
     DHT11_Init(); 
     
     OLED_ShowString(10, 24, "System Ready", 16);
+    printf("System Ready\r\n");
     delay_ms(1500); 
     
     OLED_Clear();
@@ -40,6 +43,8 @@ int main(void)
         {
             // 2. If read succeeds, reset the error counter to 0 immediately
             error_count = 0; 
+            
+            printf("Temperature: %d C, Humidity: %d %%\r\n", current_temp, current_humi);
 
             if (was_error) {
                 OLED_Clear();
@@ -76,6 +81,7 @@ int main(void)
                 }
                 OLED_ShowString(0, 0,  "Sensor Error!     ", 16);
                 OLED_ShowString(0, 24, "Check Wiring.     ", 16);
+                printf("Sensor Error! Check Wiring.\r\n");
             }
         }
 
