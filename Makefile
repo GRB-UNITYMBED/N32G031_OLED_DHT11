@@ -21,7 +21,8 @@ SRCS = src/main.c \
        drivers/src/n32g031_rcc.c \
        drivers/src/n32g031_usart.c \
        drivers/src/n32g031_gpio.c \
-       drivers/src/n32g031_adc.c
+       drivers/src/n32g031_adc.c \
+       drivers/src/debug_uart.c
 
 # Include Paths (Update these to match your folder structure)
 INCLUDES = -I. -Iinc -IN32_SDK -ICMSIS/Core/Include -Idrivers/inc -IN32G031_StdPeriph_Driver/inc
